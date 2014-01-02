@@ -1,0 +1,77 @@
+extends layout
+
+block content
+  div(class="container")
+    div(class="header")
+      ul(class="nav nav-pills pull-right")
+        li(class="active")
+          a(href="#") Home
+        li
+          a(href="#") About
+        li
+          a(href="#") Blog
+        li
+          a(href="#") Press
+      h3(class="text-muted") A New Startup
+    div(id="signupSuccess", class="alert alert-success", style="display:none")
+      p(id="signupSuccessText") Thanks for signing up! You'll be among the first to know when we launch.
+    div(id="signupDuplicate", class="alert alert-success", style="display:none")
+      p(id="signupDuplicateText") Fear not, you're already on the list! You'll be among the first to know when we launch.
+    div(id="signupError", class="alert alert-info", style="display:none")
+      p(id="signupErrorText") Well this is embarrassing. It looks like we're having trouble getting you on the list.
+    div(class="jumbotron")
+      h1 The next big thing is coming...
+      p(class="lead") We're pretty thrilled to unveil our latest creation. Sign up below to be notified when we officially launch!
+      p
+        a(class="btn btn-lg btn-success", data-toggle="modal", href="#signupModal") Sign up today
+    
+    div(class="footer")
+      p &copy; A New Startup 2013
+      
+    // Modal
+    div(class="modal fade", id="signupModal", tabindex="-1", role="dialog", aria-labelledby="signupModal", aria-hidden="true")
+      div(class="modal-dialog")
+        div(class="modal-content")
+          div(class="modal-header")
+            button(type="button", class="close", data-dismiss="modal", aria-hidden="true") &times;
+            h4(class="modal-title") Provide a few details and we'll be in touch...
+          div(class="modal-body")
+            form(id="signupForm", role="form")
+              input(type="hidden", id="theme", name="theme", value="flatly")
+              div(class="form-group")
+                label(for="name") Name
+                input(type="text", class="form-control", id="name", name="name", placeholder="Your name")
+              div(class="form-group")
+                label(for="email") Email address
+                input(type="email", class="form-control", id="email", name="email", placeholder="Your email address")
+              div(class="form-group")
+                label(for="previewAccess") Interested in Preview Access?
+                select(class="form-control", name="previewAccess")
+                  option Yes
+                  option No
+          div(class="modal-footer")
+            button(id="signup", type="button", class="btn btn-primary") Sign Up!
+  script(src="../static/jquery/jquery.js")
+  script(src="../static/bootstrap/js/bootstrap.min.js")
+  script.
+    $(document).ready(function() {
+      $("#signup").click(function() {
+        $.post( "/signup", $("#signupForm").serialize(),
+                function(data) {
+                  $("#signupSuccess").show();
+                }
+              )
+              .error(function(xhr) {
+                switch(xhr.status) {
+                  case 409:
+                    $("#signupDuplicate").show();
+                    break;
+                  default:
+                    $("#signupError").show();
+                }
+              })
+              .always(function() {
+                $("#signupModal").modal('hide');
+              });
+      })
+    })
