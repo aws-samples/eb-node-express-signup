@@ -1,4 +1,6 @@
-#gsg-deploy-app
+eb-node-express-signup
+======================
+
 This Node.js sample application uses the [Express](http://expressjs.com/) framework and [Bootstrap](http://getbootstrap.com/) to build a simple, scalable customer signup form that is deployed to [AWS Elastic Beanstalk](http://aws.amazon.com/elasticbeanstalk/). The application stores data in [Amazon DynamoDB](http://aws.amazon.com/dynamodb/) and publishes notifications to the [Amazon Simple Notification Service (SNS)](http://aws.amazon.com/sns/) when a customer fills out the form.
 
 ## Themes
@@ -19,3 +21,4 @@ The application stores connection info in a JSON file, app_config.json. The key-
 * NEW_SIGNUP_TOPIC: The [ARN](http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) of the SNS topic that the app uses to send notifications (e.g. 'arn:aws:sns:us-west-2:123456789012:my-supercool-app')
 
 Currently, the values are set to empty strings. You'll need to enter appropriate values for your environment.
+
