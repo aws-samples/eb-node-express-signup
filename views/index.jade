@@ -59,14 +59,20 @@ block content
         $.post( "/signup", $("#signupForm").serialize(),
                 function(data) {
                   $("#signupSuccess").show();
+                  $("#signupDuplicate").hide();
+                  $("#signupError").hide();
                 }
               )
               .error(function(xhr) {
                 switch(xhr.status) {
                   case 409:
+                    $("#signupSuccess").hide();
                     $("#signupDuplicate").show();
+                    $("#signupError").hide();
                     break;
                   default:
+                    $("#signupSuccess").hide();
+                    $("#signupDuplicate").hide();
                     $("#signupError").show();
                 }
               })
