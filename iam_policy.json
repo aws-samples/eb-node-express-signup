@@ -1,6 +1,7 @@
 {
   "Statement": [
     {
+	"Version": "2012-10-17",
       "Effect": "Allow",
       "Action": [ "dynamodb:PutItem" ],
       "Resource": [ "*" ]
