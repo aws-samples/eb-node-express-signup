@@ -34,6 +34,9 @@ app.locals.theme = process.env.THEME; //Make the THEME environment variable avai
 var config = fs.readFileSync('./app_config.json', 'utf8');
 config = JSON.parse(config);
 
+// provide AWS credentials somehow, see http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html
+// AWS.config.loadFromPath('../bikeshistory/scraper/credentials.aws.js');
+
 //Create DynamoDB client and pass in region.
 var db = new AWS.DynamoDB({region: config.AWS_REGION});
 //Create SNS client and pass in region.
@@ -47,23 +50,29 @@ app.post('/signup', function(req, res) {
   var nameField = req.body.name,
       emailField = req.body.email,
       previewBool = req.body.previewAccess;
-  res.send(200);
-  signup(nameField, emailField, previewBool);
+  // res.send(200);
+  signup(nameField, emailField, previewBool, res);
 });
 
 //Add signup form data to database.
-var signup = function (nameSubmitted, emailSubmitted, previewPreference) {
+var signup = function (nameSubmitted, emailSubmitted, previewPreference, res) {
   var formData = {
     TableName: config.STARTUP_SIGNUP_TABLE,
     Item: {
       email: {'S': emailSubmitted}, 
       name: {'S': nameSubmitted},
       preview: {'S': previewPreference}
-    }
+    },
+    ConditionExpression: "attribute_not_exists(email)"
   };
   db.putItem(formData, function(err, data) {
     if (err) {
       console.log('Error adding item to database: ', err);
+      if (err.code === 'ConditionalCheckFailedException') {
+        res.send(409);
+      } else {
+        res.send(500);
+      }
     } else {
       console.log('Form data added to database.');
       var snsMessage = 'New signup: %EMAIL%'; //Send SNS notification containing email from form.
@@ -71,8 +80,10 @@ var signup = function (nameSubmitted, emailSubmitted, previewPreference) {
       sns.publish({ TopicArn: config.NEW_SIGNUP_TOPIC, Message: snsMessage }, function(err, data) {
         if (err) {
           console.log('Error publishing SNS message: ' + err);
+          res.send(500);
         } else {
           console.log('SNS message sent.');
+          res.send(200);
         }
       });  
     }
